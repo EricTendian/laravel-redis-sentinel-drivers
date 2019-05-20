@@ -204,8 +204,13 @@ class RedisSentinelServiceProvider extends ServiceProvider
             $cacheDriver = clone $app->make('cache')->driver('redis-sentinel');
             $minutes = $this->config->get('session.lifetime');
             $connection = $this->config->get('session.connection');
+            $prefix = $this->config->get('cache.stores.'.$this->config->get('session.store').'.prefix');
 
             $cacheDriver->getStore()->setConnection($connection);
+
+            if ($prefix !== null) {
+                $cacheDriver->getStore()->setPrefix($prefix);
+            }
 
             return new CacheBasedSessionHandler($cacheDriver, $minutes);
         });
